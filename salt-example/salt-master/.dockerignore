@@ -1,0 +1,2 @@
+# Use this file to add instructions for `docker build` to ignore the `README`
+# file & all files under the `/salt-minion/` subdirectory.
