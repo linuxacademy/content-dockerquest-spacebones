@@ -1,26 +1,16 @@
-FROM ubuntu
-MAINTAINER Kimbro Staken
+FROM ubuntu:14.04
 
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update && apt-get upgrade -y -o DPkg:Options::=--force-confold
+RUN apt-get install -y software-properties-common dmidecode
+RUN add-apt-repository -y ppa:saltstack/salt
 RUN apt-get update
 
-RUN apt-get install -y wget sudo supervisor
+RUN apt-get install -y salt-master=2014.1.11+ds-2trusty1
 
-RUN apt-get install -y python-software-properties 
-RUN add-apt-repository ppa:saltstack/salt
-RUN apt-get update
+VOLUME ['/etc/salt/pki', '/var/cache/salt', '/var/logs/salt', '/etc/salt/master.d', '/srv/salt']
 
-# Keep upstart from complaining
-RUN dpkg-divert --local --rename --add /sbin/initctl
-RUN ln -s /bin/true /sbin/initctl
-
-RUN apt-get install -y salt-master openssh-server 
-
-RUN echo "root:salt-master" | chpasswd
-RUN mkdir -p -m0755 /var/run/sshd
-
-ADD ./supervisor-salt.conf /etc/supervisor/conf.d/
-
+ADD run.sh /usr/local/bin/run.sh
+RUN chmod +x /usr/local/bin/run.sh
 EXPOSE 4505 4506
 
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]  
+CMD "/usr/local/bin/run.sh"
