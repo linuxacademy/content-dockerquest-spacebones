@@ -1,16 +1,22 @@
-FROM ubuntu:14.04
+FROM jarfil/salt-master-mini:debian-stretch
 
-RUN apt-get update && apt-get upgrade -y -o DPkg:Options::=--force-confold
-RUN apt-get install -y software-properties-common dmidecode
-RUN add-apt-repository -y ppa:saltstack/salt
-RUN apt-get update
+MAINTAINER Jaroslaw Filiochowski <jarfil@gmail.com>
 
-RUN apt-get install -y salt-master=2014.1.11+ds-2trusty1
+COPY . /
 
-VOLUME ['/etc/salt/pki', '/var/cache/salt', '/var/logs/salt', '/etc/salt/master.d', '/srv/salt']
+RUN apt-get -y update && \
+	apt-get -y upgrade && \
+	apt-get -y install \
+		salt-minion \
+		salt-ssh \
+		salt-cloud && \
+	apt-get -y autoremove && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/
 
-ADD run.sh /usr/local/bin/run.sh
-RUN chmod +x /usr/local/bin/run.sh
+RUN chmod +x \
+	/docker-entrypoint.sh
+
 EXPOSE 4505 4506
 
-CMD "/usr/local/bin/run.sh"
+CMD /docker-entrypoint.sh

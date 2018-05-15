@@ -1,2 +1,2 @@
-# Use this file to add instructions for `docker build` to ignore the `README`
-# file & all files under the `/salt-minion/` subdirectory.
+# Populate this file to instruct `docker build` to ignore `badscript.sh` & any
+# extra conf files for salt.
